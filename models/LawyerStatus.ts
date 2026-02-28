@@ -1,6 +1,15 @@
-import mongoose from "mongoose"
+import mongoose, { Schema, models, Document } from "mongoose"
 
-const LawyerStatusSchema = new mongoose.Schema(
+export interface ILawyerStatus extends Document {
+    email: string
+    name: string
+    isAvailable: boolean
+    lastUpdated: Date
+    createdAt: Date
+    updatedAt: Date
+}
+
+const LawyerStatusSchema = new Schema(
     {
         email: {
             type: String,
@@ -25,5 +34,5 @@ const LawyerStatusSchema = new mongoose.Schema(
     }
 )
 
-export default mongoose.models.LawyerStatus ||
-    mongoose.model("LawyerStatus", LawyerStatusSchema)
+const LawyerStatus = models.LawyerStatus || mongoose.model<ILawyerStatus>("LawyerStatus", LawyerStatusSchema)
+export default LawyerStatus

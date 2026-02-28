@@ -53,13 +53,13 @@ export async function POST(req: NextRequest) {
         )
       }
 
-      // Prevent double booking - added 'as any' to bypass the property check
+      // Prevent double booking
       const existing = await Booking.findOne({
-        lawyerId: body.lawyerId,
-        date: body.date,
-        time: body.time,
+        lawyerId: body.lawyerId as string,
+        date: body.date as string,
+        time: body.time as string,
         status: "Pending",
-      } as any)
+      })
 
       if (existing) {
         return NextResponse.json(
@@ -76,9 +76,9 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json(booking, { status: 201 })
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     return NextResponse.json(
-      { error: error.message },
+      { error: (error as Error).message },
       { status: 500 }
     )
   }
@@ -96,15 +96,14 @@ export async function GET(req: NextRequest) {
 
     const filter = email ? { userEmail: email } : {}
 
-    // Using 'as any' here solves the "missing 94 properties" error
-    const bookings = await Booking.find(filter as any)
-      .sort({ createdAt: -1 } as any)
+    const bookings = await Booking.find(filter)
+      .sort({ createdAt: -1 })
 
     return NextResponse.json(bookings)
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     return NextResponse.json(
-      { error: error.message },
+      { error: (error as Error).message },
       { status: 500 }
     )
   }
@@ -125,18 +124,18 @@ export async function PUT(req: NextRequest) {
       )
     }
 
-    // Using 'as any' on the options object to satisfy the strict QueryOptions check
+    // Using safer type handle for mongoose options
     await Booking.findByIdAndUpdate(
       body.id,
       { status: body.status },
-      { new: true } as any
+      { new: true }
     )
 
     return NextResponse.json({ success: true })
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     return NextResponse.json(
-      { error: error.message },
+      { error: (error as Error).message },
       { status: 500 }
     )
   }
@@ -157,13 +156,13 @@ export async function DELETE(req: NextRequest) {
       )
     }
 
-    await (Booking as any).findByIdAndDelete(body.id)
+    await Booking.findByIdAndDelete(body.id)
 
     return NextResponse.json({ success: true })
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     return NextResponse.json(
-      { error: error.message },
+      { error: (error as Error).message },
       { status: 500 }
     )
   }

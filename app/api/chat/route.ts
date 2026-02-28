@@ -1,8 +1,9 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import OpenAI from "openai";
 import { NextResponse } from "next/server";
 
-// Using your fallback key (though .env is better!)
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "AIzaSyCYA-OYqy3-NbURlOfNakRD4W5XShSsv5k");
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
 
 export async function POST(req: Request) {
   try {
@@ -12,35 +13,36 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Message is required" }, { status: 400 });
     }
 
-    // Use 2.5-flash as 1.5-flash is deprecated/unavailable
-    const model = genAI.getGenerativeModel({
-      model: "gemini-2.5-flash",
-      systemInstruction: `You are a helpful legal assistant for Law-Sarthi. 
-      The user has selected the language: ${language || 'en-US'}. 
-      Please respond in this language. 
-      If the user asks in a different language, adapt to that language, but prioritize the selected language context.`
-    });
+    console.log("Using OpenAI for message:", message);
 
-    // This mimics your "history" logic from the Node script
-    const chat = model.startChat({
-      history: [
+    const completion = await openai.chat.completions.create({
+      model: "gpt-4o",
+      messages: [
         {
-          role: "user",
-          parts: [{ text: "You are a helpful assistant chatbot for Law-Sarthi." }],
+          role: "system",
+          content: `You are a helpful legal assistant for Law-Sarthi. 
+          The user has selected the language: ${language || 'en-US'}. 
+          Please respond in this language if possible.`
         },
         {
-          role: "model",
-          parts: [{ text: "Understood. I am ready to help." }],
+          role: "user",
+          content: message,
         },
       ],
     });
 
-    const result = await chat.sendMessage(message);
-    const response = result.response.text();
+    const reply = completion.choices[0].message.content;
 
-    return NextResponse.json({ reply: response });
-  } catch (error) {
-    console.error("Gemini API Error:", error);
-    return NextResponse.json({ error: "AI service failed to respond" }, { status: 500 });
+    return NextResponse.json({ reply });
+  } catch (error: any) {
+    console.error("OpenAI API Error Detail:", {
+      message: error.message,
+      stack: error.stack,
+      status: error.status,
+    });
+    return NextResponse.json({
+      error: "AI service failed to respond",
+      details: error.message
+    }, { status: 500 });
   }
 }

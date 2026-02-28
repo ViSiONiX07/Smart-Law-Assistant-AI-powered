@@ -1,6 +1,12 @@
-import mongoose from "mongoose"
+import mongoose, { Schema, models, Document } from "mongoose"
 
-const OtpSchema = new mongoose.Schema({
+export interface IOtp extends Document {
+    email: string
+    otp: string
+    createdAt: Date
+}
+
+const OtpSchema = new Schema({
     email: {
         type: String,
         required: true,
@@ -17,4 +23,5 @@ const OtpSchema = new mongoose.Schema({
     },
 })
 
-export default mongoose.models.Otp || mongoose.model("Otp", OtpSchema)
+const Otp = models.Otp || mongoose.model<IOtp>("Otp", OtpSchema)
+export default Otp

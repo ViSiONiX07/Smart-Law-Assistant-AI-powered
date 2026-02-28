@@ -12,18 +12,18 @@ export async function POST(req: NextRequest) {
         }
 
         // Find OTP record
-        const otpRecord = await Otp.findOne({ email, otp } as any)
+        const otpRecord = await Otp.findOne({ email, otp })
 
         if (!otpRecord) {
             return NextResponse.json({ error: "Invalid or expired OTP" }, { status: 400 })
         }
 
         // Success - Delete OTP so it can't be reused
-        await Otp.deleteOne({ _id: otpRecord._id })
+        await Otp.deleteOne({ _id: (otpRecord as { _id: string })._id })
 
         return NextResponse.json({ success: true, message: "Email verified successfully" })
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error("Verify OTP Error:", error)
-        return NextResponse.json({ error: error.message }, { status: 500 })
+        return NextResponse.json({ error: (error as Error).message }, { status: 500 })
     }
 }

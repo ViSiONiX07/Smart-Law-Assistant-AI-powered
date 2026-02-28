@@ -25,7 +25,6 @@ const LANGUAGES = [
 
 export default function ChatPage() {
   const { user, openLoginModal } = useAuth()
-  const router = useRouter()
 
   const [chat, setChat] = useState<Message[]>([])
   const [message, setMessage] = useState("")
@@ -43,7 +42,10 @@ export default function ChatPage() {
   // Load saved chat
   useEffect(() => {
     const saved = localStorage.getItem("law_saarthi_chat")
-    if (saved) setChat(JSON.parse(saved))
+    if (saved) {
+      const parsed = JSON.parse(saved)
+      setChat((prev) => (JSON.stringify(prev) === JSON.stringify(parsed) ? prev : parsed))
+    }
   }, [])
 
   // Persist + auto-scroll
@@ -68,7 +70,7 @@ export default function ChatPage() {
       return
     }
     if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-      // @ts-ignore
+      // @ts-expect-error - webkitSpeechRecognition is not in the standard Window type
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition
       const recognition = new SpeechRecognition()
       recognition.lang = language
@@ -77,12 +79,12 @@ export default function ChatPage() {
 
       recognition.onstart = () => setIsListening(true)
       recognition.onend = () => setIsListening(false)
-      recognition.onerror = (event: any) => {
+      recognition.onerror = (event: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
         setIsListening(false)
         console.error("Speech recognition error", event.error)
       }
 
-      recognition.onresult = (event: any) => {
+      recognition.onresult = (event: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
         const current = event.resultIndex;
         const transcript = event.results[current][0].transcript;
         if (event.results[current].isFinal) {
@@ -158,7 +160,7 @@ export default function ChatPage() {
       }
 
       setChat(prev => [...prev, botMessage])
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Chat API error:", err)
 
       setError("Unable to connect to AI service.")
@@ -272,9 +274,9 @@ export default function ChatPage() {
                       }`}
                   >
                     <ReactMarkdown components={{
-                      strong: ({ node, ...props }) => <span className="font-bold text-cyan-200" {...props} />,
-                      ul: ({ node, ...props }) => <ul className="list-disc ml-4 my-2" {...props} />,
-                      ol: ({ node, ...props }) => <ol className="list-decimal ml-4 my-2" {...props} />,
+                      strong: ({ ...props }) => <span className="font-bold text-cyan-200" {...props} />,
+                      ul: ({ ...props }) => <ul className="list-disc ml-4 my-2" {...props} />,
+                      ol: ({ ...props }) => <ol className="list-decimal ml-4 my-2" {...props} />,
                     }}>
                       {msg.content}
                     </ReactMarkdown>

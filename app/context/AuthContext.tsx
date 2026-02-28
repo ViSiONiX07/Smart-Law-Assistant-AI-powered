@@ -32,8 +32,8 @@ export function AuthProvider({
     const stored = localStorage.getItem("user")
     if (stored) {
       try {
-        const parsed = JSON.parse(stored)
-        setUser(parsed)
+        const parsed: User = JSON.parse(stored)
+        setUser((prev) => (JSON.stringify(prev) === JSON.stringify(parsed) ? prev : parsed))
       } catch (err) {
         console.error("Failed to parse stored user", err)
       }

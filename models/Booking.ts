@@ -1,4 +1,17 @@
-import mongoose, { Schema, models } from "mongoose"
+import mongoose, { Schema, models, Document } from "mongoose"
+
+export interface IBooking extends Document {
+  type: "scheduled" | "instant"
+  lawyerId: string
+  lawyerName: string
+  specialty: string
+  userEmail: string
+  date?: string
+  time?: string
+  status: "Pending" | "Cancelled" | "Completed"
+  createdAt: Date
+  updatedAt: Date
+}
 
 const BookingSchema = new Schema(
   {
@@ -22,4 +35,5 @@ const BookingSchema = new Schema(
   { timestamps: true }
 )
 
-export default models.Booking || mongoose.model("Booking", BookingSchema)
+const Booking = models.Booking || mongoose.model<IBooking>("Booking", BookingSchema)
+export default Booking

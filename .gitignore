@@ -46,8 +46,16 @@ test-classify.js
 test-resend.js
 test-mongo.js
 test-otp.js
+test-key.js
+test-gemini.js
 
 # data files
 payload.json
 payload-hindi.json
 models.txt
+lint_output*.txt
+.gemini/
+.agents/
+.agent/
+_agents/
+_agent/

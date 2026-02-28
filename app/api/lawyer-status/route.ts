@@ -14,7 +14,7 @@ export async function GET(req: NextRequest) {
 
         if (email) {
             // Get specific lawyer status
-            let status = await LawyerStatus.findOne({ email } as any)
+            let status = await LawyerStatus.findOne({ email })
 
             // If not found, create default status
             if (!status) {
@@ -28,7 +28,7 @@ export async function GET(req: NextRequest) {
             return NextResponse.json(status)
         } else {
             // Get all lawyer statuses
-            const statuses = await LawyerStatus.find({} as any)
+            const statuses = await LawyerStatus.find({})
             return NextResponse.json(statuses)
         }
 
@@ -56,7 +56,7 @@ export async function PUT(req: NextRequest) {
         }
 
         const status = await LawyerStatus.findOneAndUpdate(
-            { email: body.email } as any,
+            { email: body.email },
             {
                 email: body.email,
                 name: body.name || body.email.split("@")[0],
@@ -68,9 +68,9 @@ export async function PUT(req: NextRequest) {
 
         return NextResponse.json(status)
 
-    } catch (error: any) {
+    } catch (error: unknown) {
         return NextResponse.json(
-            { error: error.message },
+            { error: (error as Error).message },
             { status: 500 }
         )
     }

@@ -53,13 +53,13 @@ export async function POST(req: NextRequest) {
 
     if (error) {
       console.error("Resend Error Detail:", error)
-      return NextResponse.json({ error: error.message }, { status: 500 })
+      return NextResponse.json({ error: (error as Error).message }, { status: 500 })
     }
 
     console.log("SENDING OTP: Email sent successfully.")
     return NextResponse.json({ success: true, message: "OTP sent successfully" })
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("CRITICAL Send OTP Error:", error)
-    return NextResponse.json({ error: error.message }, { status: 500 })
+    return NextResponse.json({ error: (error as Error).message }, { status: 500 })
   }
 }

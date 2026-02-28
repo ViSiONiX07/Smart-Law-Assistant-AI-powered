@@ -150,7 +150,7 @@ export default function LoginPage() {
           ) : (
             <div>
               <label className="block text-xs font-semibold text-slate-400 mb-1 uppercase tracking-wider">Enter OTP</label>
-              <p className="text-xs text-slate-500 mb-2">We've sent a 6-digit code to {email}</p>
+              <p className="text-xs text-slate-500 mb-2">We&apos;ve sent a 6-digit code to {email}</p>
               <input
                 placeholder="000000"
                 maxLength={6}

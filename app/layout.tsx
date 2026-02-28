@@ -1,8 +1,10 @@
-
 import "./globals.css"
 import type { Metadata } from "next"
+import { Inter } from "next/font/google"
 import { AuthProvider } from "./context/AuthContext"
 import Navbar from "./components/Navbar"
+
+const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
   title: "Law Saarthi",
@@ -16,7 +18,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="bg-[#0B0C15] text-gray-100 antialiased selection:bg-cyan-500/30 selection:text-cyan-200">
+      <body className={`${inter.className} bg-[#0B0C15] text-gray-100 antialiased selection:bg-cyan-500/30 selection:text-cyan-200`}>
         <AuthProvider>
           <Navbar />
           <div className="pt-24">{children}</div>
